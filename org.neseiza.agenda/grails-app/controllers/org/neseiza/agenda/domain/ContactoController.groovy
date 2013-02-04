@@ -99,4 +99,18 @@ class ContactoController {
             redirect(action: "show", id: id)
         }
     }
+    
+    def findContacto(){
+        paramBusqueda = params.busqueda       
+        List contactoList = []
+        def filtros = [Contacto.findByNombre(paramBusqueda), Contacto.findByApellido(paramBusqueda), Contacto.findByDireccion(paramBusqueda), Contacto.findByCorreo(paramBusqueda), Contacto.findByTelefono(paramBusqueda)]
+        
+        for ( resultado in filtros ){
+            if(resultado != null)
+                for( instancia in resultado )
+                    contactoList.add(instancia)            
+        }
+        
+        render(view: "list", model: [contactoInstanceList: contactoList, contactoInstanceTotal: contactoList.size()])               
+    }
 }
