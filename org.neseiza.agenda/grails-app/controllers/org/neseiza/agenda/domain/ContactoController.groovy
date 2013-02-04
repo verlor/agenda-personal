@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class ContactoController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+    static allowedMethods = [save: "POST", update: "POST", delete: "POST", findContacto: "POST"]
 
     def index() {
         redirect(action: "list", params: params)
@@ -100,17 +100,22 @@ class ContactoController {
         }
     }
     
-    def findContacto(){
-        paramBusqueda = params.busqueda       
-        List contactoList = []
-        def filtros = [Contacto.findByNombre(paramBusqueda), Contacto.findByApellido(paramBusqueda), Contacto.findByDireccion(paramBusqueda), Contacto.findByCorreo(paramBusqueda), Contacto.findByTelefono(paramBusqueda)]
+    def findContacto(String busqueda){        
         
-        for ( resultado in filtros ){
-            if(resultado != null)
-                for( instancia in resultado )
-                    contactoList.add(instancia)            
+        if(busqueda != null){
+            def paramBusqueda = busqueda
+            List contactoList = []
+            def filtros = [Contacto.findAllByNombre(paramBusqueda), Contacto.findAllByApellido(paramBusqueda), Contacto.findAllByDireccion(paramBusqueda), Contacto.findAllByCorreo(paramBusqueda), Contacto.findAllByTelefono(paramBusqueda)]
+
+            for ( resultado in filtros ){
+                if(resultado != null)
+                    for( instancia in resultado )
+                        contactoList.add(instancia)            
+            }
+                        
+            render(view: "list", model: [contactoInstanceList: contactoList, contactoInstanceTotal: contactoList.size()])               
         }
-        
-        render(view: "list", model: [contactoInstanceList: contactoList, contactoInstanceTotal: contactoList.size()])               
+        else
+            redirect(action: "list")
     }
 }
